@@ -11,6 +11,9 @@ let allPoints = [];
 let markerLayers = {};
 let categoryButtons = {};
 let visibleMarkers = [];
+//
+let selectedLobbies = [];
+let pathLine = null;
 
 // Map settings
 const CAMPUS_CENTER = [9.993604235, 76.35831674];
@@ -230,8 +233,34 @@ async function fetchPoints() {
     document.getElementById('loadingIndicator').style.display = 'none';
   }
 }
+function drawPathBetweenLobbies(start, end) {
+  if (start.floor !== end.floor) {
+    alert("Selected lobbies are on different floors.");
+    return;
+  }
+
+  const pathCoords = [
+    [start.latitude, start.longitude],
+    [end.latitude, end.longitude]
+  ];
+
+  pathLine = L.polyline(pathCoords, {
+    color: 'blue',
+    weight: 4,
+    opacity: 0.8,
+    dashArray: '5, 10'
+  }).addTo(map);
+
+  map.fitBounds(pathLine.getBounds(), { padding: [50, 50] });
+}
 
 async function fetchFloorPoints(floor) {
+  if (pathLine) {
+  map.removeLayer(pathLine);
+  pathLine = null;
+  selectedLobbies = [];
+}
+
   try {
     if (window.entranceMarker && map.hasLayer(window.entranceMarker)) {
       map.removeLayer(window.entranceMarker);
@@ -357,12 +386,30 @@ function createMarker(point) {
   `);
   
   marker.pointData = point;
+  if (point.type === 'lobby') {
+  marker.on('click', () => handleLobbyClick(point));
+}
   marker.floor = point.floor;
   marker.category = point.type || 'uncategorized';
   
   createLabelForMarker(marker);
   
   return marker;
+}
+function handleLobbyClick(lobby) {
+  if (selectedLobbies.length === 2) {
+    selectedLobbies = [];
+    if (pathLine) {
+      map.removeLayer(pathLine);
+      pathLine = null;
+    }
+  }
+
+  selectedLobbies.push(lobby);
+
+  if (selectedLobbies.length === 2) {
+    drawPathBetweenLobbies(selectedLobbies[0], selectedLobbies[1]);
+  }
 }
 
 function createLabelForMarker(marker) {
