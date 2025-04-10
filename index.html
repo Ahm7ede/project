@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampNav - Indoor Navigation</title>
+  <!-- Supabase client library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.6/dist/umd/supabase.min.js"></script>
+  <!-- Leaflet library -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Splash Screen -->
+  <div class="splash-screen" id="splash">
+    <div class="splash-logo">CampNav</div>
+  </div>
+  
+  <!-- Main App -->
+  <div class="app-container" id="app">
+    <div class="map-container">
+      <!-- Map will be rendered here -->
+      <div id="map"></div>
+      
+      <div class="loading" id="loadingIndicator">Loading map points...</div>
+      
+      <div class="floor-controls">
+        <button class="floor-button" data-floor="0">0</button>
+        <button class="floor-button" data-floor="1">1</button>
+        <button class="floor-button" data-floor="2">2</button>
+        <button class="floor-button" data-floor="3">3</button>
+      </div>
+    </div>
+    
+    <div class="search-bar">
+      <input type="text" class="search-input" placeholder="Search locations...">
+    </div>
+    
+    <div class="poi-panel" id="poiPanel">
+      <div class="poi-handle" id="poiHandle"></div>
+      <h3 class="poi-title">Filter by Category</h3>
+      
+      <div class="poi-buttons">
+  <button class="poi-button" data-category="elevator">
+    <svg class="poi-icon" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2">
+      <path d="M5 15l7-7 7 7"/>
+      <path d="M12 4v16"/>
+    </svg>
+    <span class="poi-label">Elevator</span>
+  </button>
+  <button class="poi-button" data-category="canteen">
+    <svg class="poi-icon" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2">
+      <path d="M3 11h18M5 11l1-7h12l1 7M9 11v5M15 11v5"/>
+      <path d="M19 11H5a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2z"/>
+    </svg>
+    <span class="poi-label">Canteen</span>
+  </button>
+  <button class="poi-button" data-category="washroom">
+    <svg class="poi-icon" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2">
+      <path d="M12 12H5a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2h-7z"/>
+      <path d="M12 12V6a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v6"/>
+      <path d="M9 6H8a2 2 0 0 0-2 2v6h5V6z"/>
+    </svg>
+    <span class="poi-label">Washroom</span>
+  </button>
+  <button class="poi-button" data-category="library">
+    <svg class="poi-icon" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+      <path d="M10 2v20"/>
+    </svg>
+    <span class="poi-label">Library</span>
+  </button>
+  <button class="poi-button" data-category="lab">
+    <svg class="poi-icon" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2">
+      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+      <path d="M8 21h8"/>
+      <path d="M12 17v4"/>
+    </svg>
+    <span class="poi-label">lab</span>
+  </button>
+</div>
+    </div>
+  </div>
+
+  <!-- Custom script -->
+  <script type="module" src="main.js"></script>
+</body>
+</html> 
