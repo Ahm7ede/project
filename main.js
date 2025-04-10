@@ -71,9 +71,9 @@ function initializeMap() {
   }).addTo(map);
 
   map.whenReady(() => {
-    if (currentFloor === 0) {
-      focusOnEntrance();
-    }
+    // if (currentFloor === 0) {
+    //   focusOnEntrance();
+    // }
     fetchPoints();
   });
 
@@ -84,53 +84,53 @@ function initializeMap() {
   document.querySelector(`.floor-button[data-floor="${currentFloor}"]`).classList.add('active');
 }
 
-function focusOnEntrance() {
-  if (currentFloor !== 0) return;
+// function focusOnEntrance() {
+//   if (currentFloor !== 0) return;
   
-  const entrancePoint = {
-    latitude: 9.993604235,
-    longitude: 76.35831674,
-    floor: 0,
-    type: 'entrance',
-    name: 'mbentrance'
-  };
+//   const entrancePoint = {
+//     latitude: 9.993604235,
+//     longitude: 76.35831674,
+//     floor: 0,
+//     type: 'entrance',
+//     name: 'mbentrance'
+//   };
 
-  map.flyTo([entrancePoint.latitude, entrancePoint.longitude], CAMPUS_ZOOM, {
-    duration: 1,
-    easeLinearity: 0.25
-  });
+//   map.flyTo([entrancePoint.latitude, entrancePoint.longitude], CAMPUS_ZOOM, {
+//     duration: 1,
+//     easeLinearity: 0.25
+//   });
 
-  createEntranceMarker(entrancePoint);
-}
+//   createEntranceMarker(entrancePoint);
+// }
 
-function createEntranceMarker(point) {
-  if (currentFloor !== 0) return;
+// function createEntranceMarker(point) {
+//   if (currentFloor !== 0) return;
 
-  if (window.entranceMarker && map.hasLayer(window.entranceMarker)) {
-    map.removeLayer(window.entranceMarker);
-  }
+//   if (window.entranceMarker && map.hasLayer(window.entranceMarker)) {
+//     map.removeLayer(window.entranceMarker);
+//   }
 
-  const entranceIcon = L.divIcon({
-    className: 'entrance-marker-icon',
-    html: '<div class="entrance-pin"><div class="entrance-pin-inner"></div></div>',
-    iconSize: [30, 30],
-    iconAnchor: [15, 30]
-  });
+//   const entranceIcon = L.divIcon({
+//     className: 'entrance-marker-icon',
+//     html: '<div class="entrance-pin"><div class="entrance-pin-inner"></div></div>',
+//     iconSize: [30, 30],
+//     iconAnchor: [15, 30]
+//   });
   
-  window.entranceMarker = L.marker([point.latitude, point.longitude], {
-    icon: entranceIcon,
-    zIndexOffset: 1000
-  }).addTo(map);
+//   window.entranceMarker = L.marker([point.latitude, point.longitude], {
+//     icon: entranceIcon,
+//     zIndexOffset: 1000
+//   }).addTo(map);
   
-  window.entranceMarker.getElement().classList.add('pulsing');
+//   window.entranceMarker.getElement().classList.add('pulsing');
   
-  window.entranceMarker.bindPopup(`
-    <div class="entrance-popup">
-      <h3>Main Building Entrance</h3>
-      <p>You are here</p>
-    </div>
-  `);
-}
+//   window.entranceMarker.bindPopup(`
+//     <div class="entrance-popup">
+//       <h3>Main Building Entrance</h3>
+//       <p>You are here</p>
+//     </div>
+//   `);
+// }
 
 function initializeUI() {
   const poiPanel = document.getElementById('poiPanel');
@@ -214,9 +214,9 @@ async function fetchPoints() {
     filterAndDisplayPoints();
     fitMapToBounds();
     
-    if (currentFloor === 0) {
-      focusOnEntrance();
-    }
+    // if (currentFloor === 0) {
+    //   focusOnEntrance();
+    // }
     
   } catch (error) {
     console.error('Error fetching points:', error);
@@ -249,16 +249,16 @@ async function fetchFloorPoints(floor) {
     filterAndDisplayPoints();
     fitMapToBounds();
 
-    if (floor === 0) {
-      const entrancePoint = {
-        latitude: 9.993604235,
-        longitude: 76.35831674,
-        floor: 0,
-        type: 'entrance',
-        name: 'mbentrance'
-      };
-      createEntranceMarker(entrancePoint);
-    }
+    // if (floor === 0) {
+    //   const entrancePoint = {
+    //     latitude: 9.993604235,
+    //     longitude: 76.35831674,
+    //     floor: 0,
+    //     type: 'entrance',
+    //     name: 'mbentrance'
+    //   };
+    //   createEntranceMarker(entrancePoint);
+    // }
     
   } catch (error) {
     console.error(`Error fetching points for floor ${floor}:`, error);
