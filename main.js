@@ -444,57 +444,71 @@ function fitMapToBounds() {
 }
 
 function searchPoints(query) {
-  const found = allPoints.find(point => 
-    (point.name && point.name.toLowerCase().includes(query)) || 
-    (point.type && point.type.toLowerCase().includes(query))
-  );
-  
-  if (found) {
-    if (found.floor !== currentFloor) {
-      currentFloor = found.floor;
-      document.querySelectorAll('.floor-button').forEach(btn => {
-        btn.classList.remove('active');
-        if (parseInt(btn.dataset.floor) === currentFloor) {
-          btn.classList.add('active');
+  query = query.toLowerCase();
+
+  supabase
+    .from('points')
+    .select('*')
+    .then(({ data, error }) => {
+      if (error || !data) {
+        console.error('Error searching points:', error);
+        alert("Something went wrong while searching.");
+        return;
+      }
+
+      const found = data.find(point =>
+        (point.name && point.name.toLowerCase().includes(query)) ||
+        (point.type && point.type.toLowerCase().includes(query))
+      );
+
+      if (found) {
+        if (found.floor !== currentFloor) {
+          currentFloor = found.floor;
+          document.querySelectorAll('.floor-button').forEach(btn => {
+            btn.classList.remove('active');
+            if (parseInt(btn.dataset.floor) === currentFloor) {
+              btn.classList.add('active');
+            }
+          });
         }
-      });
-    }
-    
-    currentCategory = null;
-    document.querySelectorAll('.poi-button').forEach(btn => {
-      btn.classList.remove('active');
+
+        currentCategory = null;
+        document.querySelectorAll('.poi-button').forEach(btn => {
+          btn.classList.remove('active');
+        });
+
+        fetchFloorPoints(currentFloor).then(() => {
+          map.setView([found.latitude, found.longitude], LABEL_ZOOM_LEVEL + 1);
+
+          const highlightMarker = L.circleMarker([found.latitude, found.longitude], {
+            radius: 15,
+            color: '#e74c3c',
+            weight: 3,
+            opacity: 0.8,
+            fillColor: '#e74c3c',
+            fillOpacity: 0.3,
+            className: 'highlight-marker'
+          }).addTo(map);
+
+          const markerElement = highlightMarker.getElement();
+          if (markerElement) {
+            markerElement.style.animation = 'pulse 1.5s infinite';
+          }
+
+          setTimeout(() => {
+            map.removeLayer(highlightMarker);
+          }, 3000);
+
+          // Delay to make sure marker is added before opening popup
+          setTimeout(() => {
+            const foundMarker = allPoints.find(p => p.id === found.id)?.marker;
+            if (foundMarker) foundMarker.openPopup();
+          }, 500);
+        });
+      } else {
+        alert(`No location found matching "${query}"`);
+      }
     });
-    
-    filterAndDisplayPoints();
-    map.setView([found.latitude, found.longitude], LABEL_ZOOM_LEVEL + 1);
-    
-    const highlightMarker = L.circleMarker([found.latitude, found.longitude], {
-      radius: 15,
-      color: '#3498db',
-      weight: 3,
-      opacity: 0.8,
-      fillColor: '#3498db',
-      fillOpacity: 0.3,
-      className: 'highlight-marker'
-    }).addTo(map);
-    
-    const markerElement = highlightMarker.getElement();
-    if (markerElement) {
-      markerElement.style.animation = 'pulse 1.5s infinite';
-    }
-    
-    setTimeout(() => {
-      map.removeLayer(highlightMarker);
-    }, 3000);
-    
-    if (found.marker) {
-      setTimeout(() => {
-        found.marker.openPopup();
-      }, 500);
-    }
-  } else {
-    alert(`No location found matching "${query}"`);
-  }
 }
 
 function getCategoryColor(category) {
