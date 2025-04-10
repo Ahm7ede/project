@@ -13,22 +13,13 @@ let categoryButtons = {};
 let visibleMarkers = [];
 let selectedLobbies = [];
 let pathLine = null;
+let currentDestination = null;
 
 // Map settings
 const CAMPUS_CENTER = [9.993604235, 76.35831674];
 const CAMPUS_ZOOM = 19;
 const MAX_ZOOM = 22;
 const LABEL_ZOOM_LEVEL = 21; // Zoom level at which labels appear
-
-// Initialize app
-document.addEventListener('DOMContentLoaded', () => {
-  initializeSplashScreen();
-  initializeSupabase();
-  initializeMap();
-  initializeUI();
-});
-
-// ... (initialize functions stay the same) ...
 
 function createMarker(point) {
   const marker = L.circleMarker([point.latitude, point.longitude], {
@@ -46,18 +37,9 @@ function createMarker(point) {
       <p>Category: ${point.type || 'None'}</p>
       <p>Floor: ${point.floor || 'N/A'}</p>
       <p>Location: ${point.latitude.toFixed(6)}, ${point.longitude.toFixed(6)}</p>
-      <button class="direction-btn" data-id="${point.id}">Get Direction</button>
+      <button class="direction-btn" onclick="handleGetDirection(${point.id})">Get Direction</button>
     </div>
   `);
-
-  marker.on('popupopen', () => {
-    setTimeout(() => {
-      const dirBtn = document.querySelector('.direction-btn');
-      if (dirBtn) {
-        dirBtn.addEventListener('click', () => handleGetDirection(point));
-      }
-    }, 300);
-  });
 
   marker.pointData = point;
   marker.floor = point.floor;
@@ -96,6 +78,8 @@ function drawPathBetweenLobbies(start, end) {
     [end.latitude, end.longitude]
   ];
 
+  if (pathLine) map.removeLayer(pathLine);
+
   pathLine = L.polyline(pathCoords, {
     color: 'blue',
     weight: 4,
@@ -106,7 +90,11 @@ function drawPathBetweenLobbies(start, end) {
   map.fitBounds(pathLine.getBounds(), { padding: [50, 50] });
 }
 
-function handleGetDirection(destination) {
+async function handleGetDirection(destinationId) {
+  const destination = allPoints.find(p => p.id === destinationId);
+  if (!destination) return alert("Destination not found.");
+  currentDestination = destination;
+
   const modal = document.createElement('div');
   modal.className = 'direction-modal';
   modal.innerHTML = `
@@ -121,11 +109,11 @@ function handleGetDirection(destination) {
   document.body.appendChild(modal);
 
   document.getElementById('closeModalBtn').onclick = () => modal.remove();
-  document.getElementById('submitManualBtn').onclick = async () => {
+  document.getElementById('submitManualBtn').onclick = () => {
     const name = document.getElementById('manualLocationInput').value.trim().toLowerCase();
     const current = allPoints.find(p => p.name?.toLowerCase() === name);
     if (current) {
-      drawPathBetweenLobbies(current, destination);
+      drawPathBetweenLobbies(current, currentDestination);
       modal.remove();
     } else {
       alert("Location not found. Please try again.");
@@ -134,7 +122,7 @@ function handleGetDirection(destination) {
 
   document.getElementById('scanQRBtn').onclick = () => {
     modal.remove();
-    startQRScanner(destination);
+    startQRScanner(currentDestination);
   };
 }
 
